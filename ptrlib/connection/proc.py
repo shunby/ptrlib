@@ -2,7 +2,7 @@ import os
 import select
 import subprocess
 from logging import getLogger
-from typing import List, Mapping, Optional, Union
+from typing import Any, Callable, List, Mapping, Optional, Union
 from ptrlib.arch.linux.memory import LinuxProcessMemory
 from ptrlib.arch.linux.sig import signal_name
 from ptrlib.binary.encoding import bytes2str
@@ -31,6 +31,7 @@ class UnixProcess(Tube):
                  stdin : Optional[int]=None,
                  stdout: Optional[int]=None,
                  stderr: Optional[int]=None,
+                 preexec_fn: Union[Callable[[], Any], None]=None,
                  **kwargs):
         """Create a UNIX process
 
@@ -45,6 +46,8 @@ class UnixProcess(Tube):
             stdin  : File descriptor of standard input
             stdout : File descriptor of standard output
             stderr : File descriptor of standard error
+            preexec_fn  : A callable object that will be called in the child process
+                        just before the child is executed.
 
         Returns:
             Process: ``Process`` instance
@@ -110,6 +113,7 @@ class UnixProcess(Tube):
                 stdin=stdin,
                 stdout=stdout,
                 stderr=stderr,
+                preexec_fn=preexec_fn
             )
         except FileNotFoundError as err:
             logger.error(f"Could not execute {args[0]}")
